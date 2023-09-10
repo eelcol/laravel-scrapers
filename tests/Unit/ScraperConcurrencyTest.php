@@ -21,8 +21,8 @@ class ScraperConcurrencyTest extends TestCase
         });
 
         $microtime_plus_5 = microtime(true) + 5;
-        Cache::shouldReceive('get')->once()->andReturn([$microtime_plus_5]);
-        Cache::shouldReceive('put')->once();
+        Cache::shouldReceive('get')->times(47)->andReturn([$microtime_plus_5]);
+        Cache::shouldReceive('put')->twice();
 
         $microtime_now = microtime(true);
         $microtime_from_test = Scraper::get('https://www.nu.nl')->body();

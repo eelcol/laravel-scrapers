@@ -9,8 +9,9 @@ class Lock
 {
     /**
      * @throws LockTimeoutException
+     * @return mixed
      */
-    public static function create(string $key, ?int $numberOfLocks, int $secondsToLock, $callback): mixed
+    public static function create(string $key, ?int $numberOfLocks, int $secondsToLock, $callback)
     {
         if (!$numberOfLocks) {
             return $callback();

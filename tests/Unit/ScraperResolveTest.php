@@ -4,6 +4,7 @@ namespace Eelcol\LaravelScrapers\Tests\Unit;
 
 use Eelcol\LaravelScrapers\Exceptions\ScraperProviderNotFound;
 use Eelcol\LaravelScrapers\Facades\Scraper;
+use Eelcol\LaravelScrapers\Providers\HttpApi;
 use Eelcol\LaravelScrapers\Providers\ScraperApi;
 use Eelcol\LaravelScrapers\Providers\ScrapingBee;
 use Eelcol\LaravelScrapers\Tests\TestCase;
@@ -40,6 +41,18 @@ class ScraperResolveTest extends TestCase
         $this->assertEquals(
             get_class(Scraper::resolve()),
             ScrapingBee::class
+        );
+    }
+
+    /** @test */
+    public function it_should_resolve_http_api_class_when_testing(): void
+    {
+        Config::set('scraper.current', 'scrapingbee');
+        Scraper::test();
+
+        $this->assertEquals(
+            get_class(Scraper::resolve()),
+            HttpApi::class,
         );
     }
 

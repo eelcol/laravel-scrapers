@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static provider(string $provider): \Eelcol\LaravelScrapers\Support\ScraperManager;
  * @method static premium(): \Eelcol\LaravelScrapers\Support\ScraperManager;
  * @method static resolve(): \Eelcol\LaravelScrapers\Contracts\Scraper;
+ * @method static test(): void;
  */
 class Scraper extends Facade
 {

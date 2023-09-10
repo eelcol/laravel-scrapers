@@ -6,7 +6,6 @@ use Eelcol\LaravelScrapers\Contracts\Scraper;
 use Eelcol\LaravelScrapers\Support\Lock;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use Psr\Http\Message\ResponseInterface;
 
 class ScrapingBee implements Scraper
 {

@@ -24,6 +24,14 @@ $response = Scraper::provider('scraperapi')->get('https://www.nu.nl');
 $response = Scraper::premium()->get('https://www.nu.nl');
 ```
 
+- When writing a test that triggers the scraper, you probably do not want to use ScraperAPI or ScrapingBee. In that case, include the test method in your test:
+
+```
+...
+Scraper::test();
+...
+```
+
 # Installation
 
 Require this package with composer.

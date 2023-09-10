@@ -6,7 +6,7 @@ use Eelcol\LaravelScrapers\Contracts\Scraper;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
-class ScraperApi implements Scraper
+class HttpApi implements Scraper
 {
     protected bool $premium = false;
 
@@ -19,15 +19,11 @@ class ScraperApi implements Scraper
 
     function get(string $url): Response
     {
-        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
-
         return Http::get($url);
     }
 
     function image(string $url): Response
     {
-        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&binary_target=true&country_code=eu&url=" . urlencode($url);
-
         return Http::get($url);
     }
 }

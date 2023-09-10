@@ -1,0 +1,40 @@
+{
+    "name": "eelcol/laravel-scrapers",
+    "description": "Laravel scrapers",
+    "keywords": ["laravel", "scrapers"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eelco Luurtsema",
+            "email": "eelcoluurtsema@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "illuminate/support": "^8|^9|^10",
+        "illuminate/database": "^8|^9|^10",
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.5",
+        "laravel/sail": "^1.19"
+    },
+    "autoload": {
+        "psr-4": {
+            "Eelcol\\LaravelScrapers\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Eelcol\\LaravelScrapers\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Eelcol\\LaravelScrapers\\LaravelScrapersServiceProvider"
+            ]
+         }
+     }
+}

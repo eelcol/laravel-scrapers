@@ -2,13 +2,15 @@
 
 namespace Eelcol\LaravelScrapers\Contracts;
 
-use Illuminate\Http\Client\Response;
+use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 
 interface Scraper
 {
-    public function setPremium(bool $premium): self;
+    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self;
 
-    public function get(string $url): Response;
+    public function get(string $url): ScrapeResponse;
 
-    public function image(string $url): Response;
+    public function post(string $url, array $data = []): ScrapeResponse;
+
+    public function image(string $url): ScrapeResponse;
 }

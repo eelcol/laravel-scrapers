@@ -2,16 +2,20 @@
 
 namespace Eelcol\LaravelScrapers\Facades;
 
-use Illuminate\Http\Client\Response;
+use Eelcol\LaravelScrapers\Support\ScrapeResponse;
+use Eelcol\LaravelScrapers\Support\ScraperManager;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static get(string $url): Response;
- * @method static image(string $url): Response;
- * @method static provider(string $provider): \Eelcol\LaravelScrapers\Support\ScraperManager;
- * @method static premium(): \Eelcol\LaravelScrapers\Support\ScraperManager;
- * @method static resolve(): \Eelcol\LaravelScrapers\Contracts\Scraper;
- * @method static test(): void;
+ * @method static ScrapeResponse get(string $url);
+ * @method static ScrapeResponse post(string $url, array $data = []);
+ * @method static ScrapeResponse image(string $url);
+ * @method static ScraperManager provider(string $provider);
+ * @method static ScraperManager premium();
+ * @method static ScraperManager rememberCookies(bool $bool = true);
+ * @method static ScraperManager withHeaders(array $headers);
+ * @method static \Eelcol\LaravelScrapers\Contracts\Scraper resolve();
+ * @method static void test();
  */
 class Scraper extends Facade
 {

@@ -18,6 +18,12 @@ class ScraperManager
 
     protected bool $test = false;
 
+    protected bool $remember_cookies = false;
+
+    protected array $headers = [];
+
+    protected array $resolved = [];
+
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -43,14 +49,38 @@ class ScraperManager
         $this->test = true;
     }
 
-    public function get(string $url): Response
+    public function rememberCookies(bool $bool = true): self
+    {
+        $this->remember_cookies = $bool;
+
+        return $this;
+    }
+
+    public function withHeaders(array $headers): self
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    public function get(string $url): ScrapeResponse
     {
         return $this->resolve()->get($url);
     }
 
-    public function image(string $url): Response
+    public function post(string $url, array $data = []): ScrapeResponse
+    {
+        return $this->resolve()->post($url, $data);
+    }
+
+    public function image(string $url): ScrapeResponse
     {
         return $this->resolve()->image($url);
+    }
+
+    public function debug(string $url, array $data = [])
+    {
+        return $this->resolve()->debug($url, $data);
     }
 
     /**
@@ -59,14 +89,30 @@ class ScraperManager
     public function resolve(): Scraper
     {
         if ($this->test) {
-            return app(HttpApi::class)->setPremium($this->premium);
+            if (!array_key_exists('test', $this->resolved)) {
+                $this->resolved['test'] = app(HttpApi::class);
+            }
+
+            return $this->resolved['test']->instantiate(
+                headers: $this->headers,
+                rememberCookies: $this->remember_cookies,
+                premium: $this->premium
+            );
         }
 
         if (!isset($this->config['providers'][$this->current])) {
             throw new ScraperProviderNotFound($this->current);
         }
 
-        return app($this->config['providers'][$this->current]['provider'])
-            ->setPremium($this->premium);
+        if (!array_key_exists($this->config['providers'][$this->current]['provider'], $this->resolved)) {
+            $this->resolved[$this->config['providers'][$this->current]['provider']] = app($this->config['providers'][$this->current]['provider']);
+        }
+
+        return $this->resolved[$this->config['providers'][$this->current]['provider']]
+            ->instantiate(
+                headers: $this->headers,
+                rememberCookies: $this->remember_cookies,
+                premium: $this->premium
+            );
     }
 }

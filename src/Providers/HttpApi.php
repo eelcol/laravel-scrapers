@@ -3,6 +3,7 @@
 namespace Eelcol\LaravelScrapers\Providers;
 
 use Eelcol\LaravelScrapers\Contracts\Scraper;
+use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -10,25 +11,48 @@ class HttpApi implements Scraper
 {
     protected bool $premium = false;
 
-    public function setPremium(bool $premium): self
+    protected array $headers = [];
+
+    protected bool $remember_cookies = false;
+
+    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
     {
         $this->premium = $premium;
+
+        $this->remember_cookies = $rememberCookies;
+
+        $this->headers = $headers;
 
         return $this;
     }
 
-    function get(string $url): Response
+    public function get(string $url): ScrapeResponse
     {
-        return Http::contentType('application/json')
+        $response = Http::contentType('application/json')
             ->acceptJson()
             ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
             ->get($url);
+
+        return ScrapeResponse::fromResponse($response);
     }
 
-    function image(string $url): Response
+    public function post(string $url, array $data = []): ScrapeResponse
     {
-        return Http::withUserAgent(
+        $response = Http::contentType('application/json')
+            ->acceptJson()
+            ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
+            ->asForm()
+            ->post($url, $data);
+
+        return ScrapeResponse::fromResponse($response);
+    }
+
+    public function image(string $url): ScrapeResponse
+    {
+        $response = Http::withUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36'
         )->get($url);
+
+        return ScrapeResponse::fromResponse($response);
     }
 }

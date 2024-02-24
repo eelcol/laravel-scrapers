@@ -3,6 +3,7 @@
 namespace Eelcol\LaravelScrapers\Providers;
 
 use Eelcol\LaravelScrapers\Contracts\Scraper;
+use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -10,24 +11,45 @@ class ScraperApi implements Scraper
 {
     protected bool $premium = false;
 
-    public function setPremium(bool $premium): self
+    protected array $headers = [];
+
+    protected bool $remember_cookies = false;
+
+    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
     {
         $this->premium = $premium;
+
+        $this->remember_cookies = $rememberCookies;
+
+        $this->headers = $headers;
 
         return $this;
     }
 
-    function get(string $url): Response
+    public function get(string $url): ScrapeResponse
     {
         $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
 
-        return Http::get($url);
+        return ScrapeResponse::fromResponse(
+            Http::get($url)
+        );
     }
 
-    function image(string $url): Response
+    public function post(string $url, array $data = []): ScrapeResponse
+    {
+        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
+
+        return ScrapeResponse::fromResponse(
+            Http::get($url)
+        );
+    }
+
+    public function image(string $url): ScrapeResponse
     {
         $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&binary_target=true&country_code=eu&url=" . urlencode($url);
 
-        return Http::get($url);
+        return ScrapeResponse::fromResponse(
+            Http::get($url)
+        );
     }
 }

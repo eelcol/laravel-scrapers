@@ -16,8 +16,10 @@ class ScraperConcurrencyTest extends TestCase
 	public function it_should_wait_before_locks_are_freed(): void
 	{
         Config::set('scraper.concurrency', 1);
+        Config::set('scraper.current', 'scrapingbee');
+
         Http::fake(function ($response) {
-            return Http::response(microtime(true), 200);
+            return Http::response('{"body": ' . microtime(true) . ', "initial-status-code": 200}', 200);
         });
 
         $microtime_plus_5 = microtime(true) + 5;

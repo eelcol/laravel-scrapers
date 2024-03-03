@@ -3,6 +3,7 @@
 namespace Eelcol\LaravelScrapers\Providers;
 
 use Eelcol\LaravelScrapers\Contracts\Scraper;
+use Eelcol\LaravelScrapers\Exceptions\ScrapeCallError;
 use Eelcol\LaravelScrapers\Support\Lock;
 use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 use Illuminate\Http\Client\Response;
@@ -117,11 +118,15 @@ class ScrapingBee implements Scraper
         });
     }
 
+    /**
+     * @throws ScrapeCallError
+     */
     protected function processResponse(Response $response): ScrapeResponse
     {
         $json = $response->json();
         if (isset($json['errors'])) {
             // handle errors
+            throw new ScrapeCallError(json_encode($json['errors']));
         }
 
         if ($this->remember_cookies) {

@@ -1,5 +1,6 @@
 <?php
 
+use Eelcol\LaravelScrapers\Providers\HttpApi;
 use Eelcol\LaravelScrapers\Providers\ScraperApi;
 use Eelcol\LaravelScrapers\Providers\ScrapingBee;
 
@@ -17,6 +18,10 @@ return [
         'scrapingbee' => [
             'key' => env('SCRAPINGBEE_KEY'),
             'provider' => ScrapingBee::class,
+        ],
+
+        'http' => [
+            'provider' => HttpApi::class,
         ],
     ],
 ];

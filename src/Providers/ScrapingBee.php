@@ -124,6 +124,10 @@ class ScrapingBee implements Scraper
     protected function processResponse(Response $response): ScrapeResponse
     {
         $json = $response->json();
+        if (is_null($json)) {
+            throw new ScrapeCallError("Invalid JSON returned");
+        }
+        
         if (isset($json['errors'])) {
             // handle errors
             throw new ScrapeCallError(json_encode($json['errors']));

@@ -129,6 +129,10 @@ class ScrapingBee implements Scraper
             throw new ScrapeCallError(json_encode($json['errors']));
         }
 
+        if ($json['initial-status-code'] == 403) {
+            throw new ScrapeCallError(json_encode($json['body']));
+        }
+
         if ($this->remember_cookies) {
             $this->cookies = $json['cookies'] + $this->cookies;
         }

@@ -47,7 +47,7 @@ class ScrapingBee implements Scraper
                 }
             }
 
-            return Http::withHeaders($this->buildHeaders())->get($url);
+            return Http::timeout(60)->withHeaders($this->buildHeaders())->get($url);
         });
 
         return $this->processResponse($response);
@@ -69,7 +69,7 @@ class ScrapingBee implements Scraper
                 }
             }
 
-            return Http::withHeaders($this->buildHeaders())->asForm()->post($url, $data);
+            return Http::timeout(60)->withHeaders($this->buildHeaders())->asForm()->post($url, $data);
         });
 
         return $this->processResponse($response);
@@ -114,7 +114,7 @@ class ScrapingBee implements Scraper
                 }
             }
 
-            return Http::get($url);
+            return Http::timeout(60)->get($url);
         });
     }
 

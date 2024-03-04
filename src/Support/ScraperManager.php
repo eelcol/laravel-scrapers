@@ -78,9 +78,9 @@ class ScraperManager
         return $this->resolve()->image($url);
     }
 
-    public function debug(string $url, array $data = [])
+    public function debug(string $url, array $data = []): void
     {
-        return $this->resolve()->debug($url, $data);
+        $this->resolve()->debug($url, $data);
     }
 
     /**

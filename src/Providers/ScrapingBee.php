@@ -127,7 +127,7 @@ class ScrapingBee implements Scraper
         if (is_null($json)) {
             throw new ScrapeCallError("Invalid JSON returned");
         }
-        
+
         if (isset($json['errors'])) {
             // handle errors
             throw new ScrapeCallError(json_encode($json['errors']));

@@ -40,16 +40,18 @@ Require this package with composer.
 composer require eelcol/laravel-scrapers
 ````
 
-Publish config:
-
-```
-php artisan config:publish --provider=laravel-scraper
-```
-
 Add to your env:
 ```
-SCRAPER_PROVIDER=scrapingbee or scraperapi
+SCRAPER_PROVIDER=see below
 SCRAPER_MAX_CONCURRENCY=5
 SCRAPERAPI_KEY=
 SCRAPINGBEE_KEY=
 ```
+
+The following values are allowed for `SCRAPER_PROVIDER`
+
+- scrapingbee
+- scraperapi
+- http
+
+Use `http` for normal HTTP requests, without using a scraper provider.

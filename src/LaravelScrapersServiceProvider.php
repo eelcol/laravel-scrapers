@@ -14,11 +14,11 @@ class LaravelScrapersServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/scraper.php', 'scraper');
+
         $this->app->bind('scraper', function ($app) {
             return new ScraperManager(config('scraper'));
         });
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/scraper.php', 'scraper');
     }
 
     /**
@@ -28,8 +28,6 @@ class LaravelScrapersServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot(Router $router)
     {
-        $this->publishes([
-            __DIR__.'/../config/scraper.php'   => config_path('scraper.php'),
-        ], 'laravel-scraper');
+        //
     }
 }

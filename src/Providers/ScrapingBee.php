@@ -47,7 +47,9 @@ class ScrapingBee implements Scraper
                 }
             }
 
-            return Http::timeout(60)->withHeaders($this->buildHeaders())->get($url);
+            return Http::timeout(60)
+                ->withHeaders($this->buildHeaders())
+                ->get($url);
         });
 
         return $this->processResponse($response);
@@ -69,7 +71,10 @@ class ScrapingBee implements Scraper
                 }
             }
 
-            return Http::timeout(60)->withHeaders($this->buildHeaders())->asForm()->post($url, $data);
+            return Http::timeout(60)
+                ->withHeaders($this->buildHeaders())
+                ->asForm()
+                ->post($url, $data);
         });
 
         return $this->processResponse($response);
@@ -141,8 +146,22 @@ class ScrapingBee implements Scraper
             throw new ScrapeCallError(json_encode($json['body']));
         }
 
-        if ($this->remember_cookies && !empty($json['cookies'])) {
-            $this->cookies = $json['cookies'] + $this->cookies;
+        if ($this->remember_cookies) {
+            if (!empty($json['cookies'])) {
+                $this->cookies = $json['cookies'] + $this->cookies;
+            } elseif (isset($json['headers']['Set-Cookie'])) {
+                $cookies = explode("/,/", $json['headers']['Set-Cookie']);
+                foreach ($cookies as $c) {
+                    $cookie = substr($c, 0, strpos($c, ";"));
+                    if (!str_contains($cookie, "=")) {
+                        $this->cookies[] = ['name' => $cookie, 'value' => ""];
+                    } else {
+                        $cookieName = substr($cookie, 0, strpos($cookie, "="));
+                        $cookieValue = substr($cookie, strpos($cookie, "=")+1);
+                        $this->cookies[] = ['name' => $cookieName, 'value' => $cookieValue];
+                    }
+                }
+            }
         }
 
         if (!is_string($json['body'])) {

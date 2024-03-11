@@ -133,6 +133,10 @@ class ScrapingBee implements Scraper
             throw new ScrapeCallError(json_encode($json['errors']));
         }
 
+        if (!isset($json['initial-status-code'])) {
+            throw new ScrapeCallError($response->body());
+        }
+
         if ($json['initial-status-code'] == 403) {
             throw new ScrapeCallError(json_encode($json['body']));
         }

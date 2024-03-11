@@ -141,7 +141,7 @@ class ScrapingBee implements Scraper
             throw new ScrapeCallError(json_encode($json['body']));
         }
 
-        if ($this->remember_cookies) {
+        if ($this->remember_cookies && !empty($json['cookies'])) {
             $this->cookies = $json['cookies'] + $this->cookies;
         }
 

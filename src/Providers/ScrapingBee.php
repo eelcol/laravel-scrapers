@@ -55,9 +55,9 @@ class ScrapingBee implements Scraper
         return $this->processResponse($response);
     }
 
-    public function post(string $url, array $data = []): ScrapeResponse
+    public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
-        $response = Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url, $data) {
+        $response = Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url, $data, $body_format) {
             $url = "https://app.scrapingbee.com/api/v1/?api_key=" . config('scraper.providers.scrapingbee.key') . "&render_js=false&country_code=nl&forward_headers=true&json_response=true&url=" . urlencode($url);
 
             if ($this->premium) {
@@ -73,7 +73,7 @@ class ScrapingBee implements Scraper
 
             return Http::timeout(60)
                 ->withHeaders($this->buildHeaders())
-                ->asForm()
+                ->bodyFormat($body_format)
                 ->post($url, $data);
         });
 

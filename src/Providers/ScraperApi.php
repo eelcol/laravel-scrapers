@@ -35,12 +35,12 @@ class ScraperApi implements Scraper
         );
     }
 
-    public function post(string $url, array $data = []): ScrapeResponse
+    public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
         $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
 
         return ScrapeResponse::fromResponse(
-            Http::get($url)
+            Http::bodyFormat($body_format)->post($url, $data)
         );
     }
 

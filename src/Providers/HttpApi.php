@@ -39,17 +39,17 @@ class HttpApi implements Scraper
         return $this->processResponse($response);
     }
 
-    public function post(string $url, array $data = []): ScrapeResponse
+    public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
         $domainParts = parse_url($url);
         $domain = $domainParts['host'];
 
         $response = Http::contentType('application/json')
             ->acceptJson()
+            ->bodyFormat($body_format)
             ->withHeaders($this->headers)
             ->withCookies($this->prepareCookies(), $domain)
             ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
-            ->asForm()
             ->post($url, $data);
 
         return $this->processResponse($response);

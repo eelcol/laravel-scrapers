@@ -68,9 +68,9 @@ class ScraperManager
         return $this->resolve()->get($url);
     }
 
-    public function post(string $url, array $data = []): ScrapeResponse
+    public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
-        return $this->resolve()->post($url, $data);
+        return $this->resolve()->post($url, $data, $body_format);
     }
 
     public function image(string $url): ScrapeResponse

@@ -10,7 +10,7 @@ interface Scraper
 
     public function get(string $url): ScrapeResponse;
 
-    public function post(string $url, array $data = []): ScrapeResponse;
+    public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse;
 
     public function image(string $url): ScrapeResponse;
 }

@@ -148,7 +148,21 @@ class ScrapingBee implements Scraper
 
         if ($this->remember_cookies) {
             if (!empty($json['cookies'])) {
-                $this->cookies = $json['cookies'] + $this->cookies;
+                foreach ($json['cookies'] as $ck) {
+                    $found = false;
+                    foreach ($this->cookies as $ckIndex => $ck2) {
+                        if ($ck['name'] == $ck2['name']) {
+                            // update value
+                            $this->cookies[$ckIndex]['value'] = $ck['value'];
+                            $found = true;
+                            break;
+                        }
+                    }
+
+                    if (!$found) {
+                        $this->cookies[] = ['name' => $ck['name'], 'value' => $ck['value']];
+                    }
+                }
             } elseif (isset($json['headers']['Set-Cookie'])) {
                 $cookies = explode("/,/", $json['headers']['Set-Cookie']);
                 foreach ($cookies as $c) {
@@ -158,7 +172,20 @@ class ScrapingBee implements Scraper
                     } else {
                         $cookieName = substr($cookie, 0, strpos($cookie, "="));
                         $cookieValue = substr($cookie, strpos($cookie, "=")+1);
-                        $this->cookies[] = ['name' => $cookieName, 'value' => $cookieValue];
+
+                        $found = false;
+                        foreach ($this->cookies as $ckIndex => $ck2) {
+                            if ($cookieName == $ck2['name']) {
+                                // update value
+                                $this->cookies[$ckIndex]['value'] = $cookieValue;
+                                $found = true;
+                                break;
+                            }
+                        }
+
+                        if (!$found) {
+                            $this->cookies[] = ['name' => $cookieName, 'value' => $cookieValue];
+                        }
                     }
                 }
             }

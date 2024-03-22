@@ -64,7 +64,7 @@ class HttpApi implements Scraper
         return ScrapeResponse::fromResponse($response);
     }
 
-    protected function processResponse(Response $response)
+    protected function processResponse(Response $response): ScrapeResponse
     {
         $headers = $response->headers();
 

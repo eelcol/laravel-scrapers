@@ -3,12 +3,13 @@
 namespace Eelcol\LaravelScrapers\Providers;
 
 use Eelcol\LaravelScrapers\Contracts\Scraper;
+use Eelcol\LaravelScrapers\Exceptions\ProxyInformationMissing;
 use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
-class HttpApi implements Scraper
+class Proxy implements Scraper
 {
     protected array $headers = [];
 
@@ -16,11 +17,18 @@ class HttpApi implements Scraper
 
     protected CookieJar $cookieJar;
 
+    /**
+     * @throws ProxyInformationMissing
+     */
     public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
     {
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
+
+        if (!config('scraper.providers.proxy.host') || !config('scraper.providers.proxy.port')) {
+            throw new ProxyInformationMissing("Host or port are missing.");
+        }
 
         return $this;
     }
@@ -33,7 +41,11 @@ class HttpApi implements Scraper
             ->when(isset($this->cookieJar), function ($r) {
                 $r->withOptions(['cookies' => $this->cookieJar]);
             })
-            ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
+            ->withOptions([
+                'proxy' => config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port'),
+                'auth' => [config('scraper.providers.proxy.user'), config('scraper.providers.proxy.pass')],
+            ])
+            ->timeout(15)
             ->get($url);
 
         return $this->processResponse($response);
@@ -48,7 +60,11 @@ class HttpApi implements Scraper
             ->when(isset($this->cookieJar), function ($r) {
                 $r->withOptions(['cookies' => $this->cookieJar]);
             })
-            ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
+            ->withOptions([
+                'proxy' => config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port'),
+                'auth' => [config('scraper.providers.proxy.user'), config('scraper.providers.proxy.pass')],
+            ])
+            ->timeout(15)
             ->post($url, $data);
 
         return $this->processResponse($response);
@@ -56,11 +72,7 @@ class HttpApi implements Scraper
 
     public function image(string $url): ScrapeResponse
     {
-        $response = Http::withUserAgent(
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36'
-        )->get($url);
-
-        return ScrapeResponse::fromResponse($response);
+        return $this->get($url);
     }
 
     protected function processResponse(Response $response): ScrapeResponse

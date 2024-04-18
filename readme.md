@@ -48,10 +48,19 @@ SCRAPERAPI_KEY=
 SCRAPINGBEE_KEY=
 ```
 
+When using a different proxy, add the following variables to your .env:
+````
+SCRAPER_PROXY_HOST=
+SCRAPER_PROXY_PORT=
+SCRAPER_PROXY_USER=
+SCRAPER_PROXY_PASS=
+````
+
 The following values are allowed for `SCRAPER_PROVIDER`
 
 - scrapingbee
 - scraperapi
 - http
+- proxy
 
-Use `http` for normal HTTP requests, without using a scraper provider.
+Use `http` for normal HTTP requests, without using a scraper provider. Use `proxy` to use a custom defined proxy.

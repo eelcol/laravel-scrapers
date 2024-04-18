@@ -1,6 +1,7 @@
 <?php
 
 use Eelcol\LaravelScrapers\Providers\HttpApi;
+use Eelcol\LaravelScrapers\Providers\Proxy;
 use Eelcol\LaravelScrapers\Providers\ScraperApi;
 use Eelcol\LaravelScrapers\Providers\ScrapingBee;
 
@@ -23,5 +24,13 @@ return [
         'http' => [
             'provider' => HttpApi::class,
         ],
+
+        'proxy' => [
+            'host' => env('SCRAPER_PROXY_HOST'),
+            'port' => env('SCRAPER_PROXY_PORT'),
+            'user' => env('SCRAPER_PROXY_USER'),
+            'pass' => env('SCRAPER_PROXY_PASS'),
+            'provider' => Proxy::class,
+        ]
     ],
 ];

@@ -33,6 +33,11 @@ class Proxy implements Scraper
         return $this;
     }
 
+    protected function getProxyOption()
+    {
+        return config('scraper.providers.proxy.user') . ":" . config('scraper.providers.proxy.pass') . "@" . config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port');
+    }
+
     public function get(string $url): ScrapeResponse
     {
         $response = Http::contentType('application/json')
@@ -42,8 +47,7 @@ class Proxy implements Scraper
                 $r->withOptions(['cookies' => $this->cookieJar]);
             })
             ->withOptions([
-                'proxy' => config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port'),
-                'auth' => [config('scraper.providers.proxy.user'), config('scraper.providers.proxy.pass')],
+                'proxy' => $this->getProxyOption(),
             ])
             ->timeout(15)
             ->get($url);
@@ -61,8 +65,7 @@ class Proxy implements Scraper
                 $r->withOptions(['cookies' => $this->cookieJar]);
             })
             ->withOptions([
-                'proxy' => config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port'),
-                'auth' => [config('scraper.providers.proxy.user'), config('scraper.providers.proxy.pass')],
+                'proxy' => $this->getProxyOption(),
             ])
             ->timeout(15)
             ->post($url, $data);

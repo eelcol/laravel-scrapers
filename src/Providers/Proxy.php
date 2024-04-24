@@ -45,9 +45,7 @@ class Proxy implements Scraper
 
     public function get(string $url): ScrapeResponse
     {
-        $response = Http::contentType('application/json')
-            ->acceptJson()
-            ->withHeaders($this->headers)
+        $response = Http::withHeaders($this->headers)
             ->when(isset($this->cookieJar), function ($r) {
                 $r->withOptions(['cookies' => $this->cookieJar]);
             })
@@ -62,9 +60,7 @@ class Proxy implements Scraper
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
-        $response = Http::contentType('application/json')
-            ->acceptJson()
-            ->bodyFormat($body_format)
+        $response = Http::bodyFormat($body_format)
             ->withHeaders($this->headers)
             ->when(isset($this->cookieJar), function ($r) {
                 $r->withOptions(['cookies' => $this->cookieJar]);

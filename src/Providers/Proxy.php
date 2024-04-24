@@ -33,9 +33,14 @@ class Proxy implements Scraper
         return $this;
     }
 
-    protected function getProxyOption()
+    protected function getProxyOption(): string
     {
-        return config('scraper.providers.proxy.user') . ":" . config('scraper.providers.proxy.pass') . "@" . config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port');
+        $string = "";
+        if (config('scraper.providers.proxy.user') && config('scraper.providers.proxy.pass')) {
+            $string = config('scraper.providers.proxy.user') . ":" . config('scraper.providers.proxy.pass') . "@";
+        }
+
+        return $string . config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port');
     }
 
     public function get(string $url): ScrapeResponse

@@ -1,5 +1,6 @@
 <?php
 
+use Eelcol\LaravelScrapers\Providers\Generic;
 use Eelcol\LaravelScrapers\Providers\HttpApi;
 use Eelcol\LaravelScrapers\Providers\Proxy;
 use Eelcol\LaravelScrapers\Providers\ScraperApi;
@@ -31,6 +32,12 @@ return [
             'user' => env('SCRAPER_PROXY_USER'),
             'pass' => env('SCRAPER_PROXY_PASS'),
             'provider' => Proxy::class,
+        ],
+
+        'generic' => [
+            'url' => env('SCRAPER_GENERIC_URL'),
+            'token' => env('SCRAPER_GENERIC_TOKEN'),
+            'provider' => Generic::class,
         ]
     ],
 ];

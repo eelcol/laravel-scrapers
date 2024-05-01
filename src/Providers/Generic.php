@@ -79,7 +79,7 @@ class Generic implements Scraper
     protected function processResponse(Response $response): ScrapeResponse
     {
         if ($this->remember_cookies) {
-            $this->cookies = $response->json('cookies');
+            $this->cookies = $response->json('cookies') ?? [];
         }
 
         return ScrapeResponse::fromResponse($response);

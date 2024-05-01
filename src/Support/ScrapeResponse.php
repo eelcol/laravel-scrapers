@@ -8,8 +8,15 @@ class ScrapeResponse
 {
     protected ?array $decoded = null;
 
-    public static function fromResponse(Response $response): self
+    public static function fromResponse(Response $response, bool $json = false): self
     {
+        if ($json) {
+            return new self(
+                body: $response->json('body') ?? '',
+                status: $response->json('status')
+            );
+        }
+
         return new self(
             body: $response->body(),
             status: $response->status()

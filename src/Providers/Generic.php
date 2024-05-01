@@ -64,7 +64,7 @@ class Generic implements Scraper
                 'cookies' => $this->buildCookies(),
             ]);
 
-        return ScrapeResponse::fromResponse($response);
+        return ScrapeResponse::fromResponse($response, true);
     }
 
     protected function buildCookies(): array
@@ -83,6 +83,6 @@ class Generic implements Scraper
             $this->cookies = $response->json('cookies') ?? [];
         }
 
-        return ScrapeResponse::fromResponse($response);
+        return ScrapeResponse::fromResponse($response, true);
     }
 }

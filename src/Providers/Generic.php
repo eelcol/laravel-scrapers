@@ -47,6 +47,7 @@ class Generic implements Scraper
                 'url' => $url,
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies(),
+                'body_format' => $body_format,
                 'data' => $data
             ]);
 

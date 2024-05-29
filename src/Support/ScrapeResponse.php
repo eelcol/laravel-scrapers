@@ -11,8 +11,13 @@ class ScrapeResponse
     public static function fromResponse(Response $response, bool $json = false): self
     {
         if ($json) {
+            $body = $response->json('body') ?? '';
+            if ($response->json('base64')) {
+                $body = base64_decode($body);
+            }
+
             return new self(
-                body: $response->json('body') ?? '',
+                body: $body,
                 status: $response->json('status')
             );
         }

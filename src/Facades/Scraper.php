@@ -21,6 +21,6 @@ class Scraper extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'scraper';
+        return 'laravel-scraper';
     }
 }

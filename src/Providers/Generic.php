@@ -58,7 +58,7 @@ class Generic implements Scraper
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))->asForm()
             ->post(config('scraper.providers.generic.url'), [
-                'method' => 'post',
+                'method' => 'image',
                 'url' => $url,
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies(),

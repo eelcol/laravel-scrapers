@@ -16,7 +16,7 @@ class LaravelScrapersServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/scraper.php', 'scraper');
 
-        $this->app->bind('scraper', function ($app) {
+        $this->app->bind('laravel-scraper', function ($app) {
             return new ScraperManager(config('scraper'));
         });
     }

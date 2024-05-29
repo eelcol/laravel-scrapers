@@ -18,30 +18,40 @@ class ScrapeResponse
 
             return new self(
                 body: $body,
-                status: $response->json('status')
+                status: $response->json('status'),
+                headers: $response->json('headers'),
             );
+        }
+
+        $headers = [];
+        foreach ($response->headers() as $header_name => $header_value) {
+            $headers[] = ['name' => $header_name, 'value' => $header_value[0]];
         }
 
         return new self(
             body: $response->body(),
-            status: $response->status()
+            status: $response->status(),
+            headers: $headers,
         );
     }
 
     public static function create(
         string $body,
-        int $status
+        int $status,
+        array $headers = [],
     ): self
     {
         return new self (
             body: $body,
-            status: $status
+            status: $status,
+            headers: $headers,
         );
     }
 
     public function __construct(
         protected string $body,
         protected int $status,
+        protected array $headers = [],
     ) {
         //
     }
@@ -67,5 +77,21 @@ class ScrapeResponse
         }
 
         return data_get($this->decoded, $key, $default);
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function getHeader(string $key): mixed
+    {
+        foreach ($this->headers as $header) {
+            if ($header['name'] == $key) {
+                return $header['value'];
+            }
+        }
+
+        return null;
     }
 }

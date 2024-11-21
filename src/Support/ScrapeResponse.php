@@ -19,7 +19,7 @@ class ScrapeResponse
             return new self(
                 body: $body,
                 status: $response->json('status'),
-                headers: $response->json('headers'),
+                headers: $response->json('headers') ?? [],
             );
         }
 

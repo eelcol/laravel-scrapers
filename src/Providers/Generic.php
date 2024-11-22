@@ -28,6 +28,7 @@ class Generic implements Scraper
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))
             ->asForm()
+            ->timeout(60)
             ->post(config('scraper.providers.generic.url'), [
                 'method' => 'get',
                 'url' => $url,
@@ -42,6 +43,7 @@ class Generic implements Scraper
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))
             ->asForm()
+            ->timeout(60)
             ->post(config('scraper.providers.generic.url'), [
                 'method' => 'post',
                 'url' => $url,
@@ -57,6 +59,7 @@ class Generic implements Scraper
     public function image(string $url): ScrapeResponse
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))->asForm()
+            ->timeout(60)
             ->post(config('scraper.providers.generic.url'), [
                 'method' => 'image',
                 'url' => $url,

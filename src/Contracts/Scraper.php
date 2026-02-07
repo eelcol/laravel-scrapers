@@ -6,7 +6,7 @@ use Eelcol\LaravelScrapers\Support\ScrapeResponse;
 
 interface Scraper
 {
-    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self;
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self;
 
     public function get(string $url): ScrapeResponse;
 

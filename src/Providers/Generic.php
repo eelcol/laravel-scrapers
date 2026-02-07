@@ -15,13 +15,22 @@ class Generic implements Scraper
 
     protected array $cookies;
 
-    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
+    protected ?string $body = null;
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
     {
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
 
+        $this->body = $body;
+
         return $this;
+    }
+
+    public function getCookies(): array
+    {
+        return $this->buildCookies();
     }
 
     public function get(string $url): ScrapeResponse
@@ -50,7 +59,8 @@ class Generic implements Scraper
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies(),
                 'body_format' => $body_format,
-                'data' => $data
+                'data' => $data,
+                'body' => $this->body
             ]);
 
         return $this->processResponse($response);

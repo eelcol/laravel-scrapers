@@ -20,7 +20,7 @@ class Proxy implements Scraper
     /**
      * @throws ProxyInformationMissing
      */
-    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
     {
         $this->remember_cookies = $rememberCookies;
 

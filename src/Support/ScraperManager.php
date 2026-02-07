@@ -24,6 +24,8 @@ class ScraperManager
 
     protected array $resolved = [];
 
+    protected ?string $body = null;
+
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -63,19 +65,41 @@ class ScraperManager
         return $this;
     }
 
+    public function withBody(string $body): self
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
     public function get(string $url): ScrapeResponse
     {
-        return $this->resolve()->get($url);
+        $response = $this->resolve()->get($url);
+
+        $this->headers = [];
+        $this->body = null;
+
+        return $response;
     }
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
-        return $this->resolve()->post($url, $data, $body_format);
+        $response = $this->resolve()->post($url, $data, $body_format);
+
+        $this->headers = [];
+        $this->body = null;
+        
+        return $response;
     }
 
     public function image(string $url): ScrapeResponse
     {
-        return $this->resolve()->image($url);
+        $response = $this->resolve()->image($url);
+
+        $this->headers = [];
+        $this->body = null;
+
+        return $response;
     }
 
     public function debug(string $url, array $data = []): void
@@ -96,6 +120,7 @@ class ScraperManager
             return $this->resolved['test']->instantiate(
                 headers: $this->headers,
                 rememberCookies: $this->remember_cookies,
+                body: $this->body,
                 premium: $this->premium
             );
         }
@@ -112,6 +137,7 @@ class ScraperManager
             ->instantiate(
                 headers: $this->headers,
                 rememberCookies: $this->remember_cookies,
+                body: $this->body,
                 premium: $this->premium
             );
     }

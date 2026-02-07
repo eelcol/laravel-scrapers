@@ -20,7 +20,7 @@ class ScrapingBee implements Scraper
 
     protected array $cookies = [];
 
-    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
     {
         $this->premium = $premium;
 

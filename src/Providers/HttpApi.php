@@ -16,11 +16,15 @@ class HttpApi implements Scraper
 
     protected CookieJar $cookieJar;
 
-    public function instantiate(array $headers, bool $rememberCookies, bool $premium): self
+    protected ?string $body = null;
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
     {
         $this->remember_cookies = $rememberCookies;
-
         $this->headers = $headers;
+        $this->body = $body;
+        
+        // Premium is not possible in this provider
 
         return $this;
     }
@@ -47,6 +51,9 @@ class HttpApi implements Scraper
             ->withHeaders($this->headers)
             ->when(isset($this->cookieJar), function ($r) {
                 $r->withOptions(['cookies' => $this->cookieJar]);
+            })
+            ->when(isset($this->body), function ($r) {
+                $r->withBody($this->body);
             })
             ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
             ->post($url, $data);

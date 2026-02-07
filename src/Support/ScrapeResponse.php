@@ -20,6 +20,7 @@ class ScrapeResponse
                 body: $body,
                 status: $response->json('status'),
                 headers: $response->json('headers') ?? [],
+                cookies: $response->json('cookies') ?? [],
             );
         }
 
@@ -28,10 +29,16 @@ class ScrapeResponse
             $headers[] = ['name' => $header_name, 'value' => $header_value[0]];
         }
 
+        $cookies = [];
+        foreach ($response->cookies() as $cookie) {
+            $cookies[] = ['name' => $cookie->getName(), 'value' => $cookie->getValue(), 'domain' => $cookie->getDomain()]; 
+        }
+
         return new self(
             body: $response->body(),
             status: $response->status(),
             headers: $headers,
+            cookies: $cookies,
         );
     }
 
@@ -39,19 +46,28 @@ class ScrapeResponse
         string $body,
         int $status,
         array $headers = [],
+        array $cookies = [],
     ): self
     {
         return new self (
             body: $body,
             status: $status,
             headers: $headers,
+            cookies: $cookies,
         );
     }
 
+    /**
+     * @param string $body
+     * @param int $status
+     * @param array<string, string> $headers Headers as key-value ["header1" => "value", "header2" => "value"].
+     * @param array<int, array{name: string, value: string, domain: string}> $cookies List of cookies; each element has name, value and domain.
+     */
     public function __construct(
         protected string $body,
         protected int $status,
         protected array $headers = [],
+        protected array $cookies = [],
     ) {
         //
     }
@@ -77,6 +93,21 @@ class ScrapeResponse
         }
 
         return data_get($this->decoded, $key, $default);
+    }
+
+    public function getCookies(): array
+    {
+        return $this->cookies;
+    }
+
+    public function getCookie(string $key): mixed
+    {
+        foreach ($this->cookies as $cookie) {
+            if ($cookie['name'] == $key) {
+                return $cookie['value'];
+            }
+        }
+        return null;
     }
 
     public function getHeaders(): array

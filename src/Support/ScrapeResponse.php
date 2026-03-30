@@ -2,6 +2,7 @@
 
 namespace Eelcol\LaravelScrapers\Support;
 
+use Eelcol\LaravelScrapers\Exceptions\UnknownScraperError;
 use Illuminate\Http\Client\Response;
 
 class ScrapeResponse
@@ -14,6 +15,10 @@ class ScrapeResponse
             $body = $response->json('body') ?? '';
             if ($response->json('base64')) {
                 $body = base64_decode($body);
+            }
+
+            if (is_null($response->json('status'))) {
+                throw new UnknownScraperError($response);
             }
 
             return new self(

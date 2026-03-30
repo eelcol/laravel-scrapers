@@ -72,9 +72,9 @@ class ScraperManager
         return $this;
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
-        $response = $this->resolve()->get($url);
+        $response = $this->resolve()->get($url, $options);
 
         $this->headers = [];
         $this->body = null;

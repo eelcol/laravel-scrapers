@@ -31,21 +31,30 @@ class ScrapingBee implements Scraper
         return $this;
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
-        $response = Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url) {
-            $url = "https://app.scrapingbee.com/api/v1/?api_key=" . config('scraper.providers.scrapingbee.key') . "&render_js=false&country_code=nl&forward_headers=true&json_response=true&url=" . urlencode($url);
+        $response = Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url, $options) {
+            $options = array_merge([
+                'api_key' => config('scraper.providers.scrapingbee.key'),
+                'render_js' => "false",
+                'country_code' => 'nl',
+                'forward_headers' => "true",
+                'json_response' => "true",
+                'url' => $url,
+            ], $options);
 
             if ($this->premium) {
-                $url .= "&premium_proxy=true";
+                $options['premium_proxy'] = "true";
             }
 
             if ($this->remember_cookies) {
                 $cookies = $this->buildCookiesString();
                 if ($cookies) {
-                    $url .= "&cookies=" . urlencode($cookies);
+                    $options['cookies'] = $cookies;
                 }
             }
+
+            $url = "https://app.scrapingbee.com/api/v1/?" . http_build_query($options);
 
             return Http::timeout(60)
                 ->withHeaders($this->buildHeaders())

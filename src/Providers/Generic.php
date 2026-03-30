@@ -33,17 +33,17 @@ class Generic implements Scraper
         return $this->buildCookies();
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))
             ->asForm()
             ->timeout(60)
-            ->post(config('scraper.providers.generic.url'), [
+            ->post(config('scraper.providers.generic.url'), array_merge([
                 'method' => 'get',
                 'url' => $url,
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies()
-            ]);
+            ], $options));
 
         return $this->processResponse($response);
     }

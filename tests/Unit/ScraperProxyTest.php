@@ -6,7 +6,6 @@ use Eelcol\LaravelScrapers\Facades\Scraper;
 use Eelcol\LaravelScrapers\Tests\TestCase;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
@@ -16,18 +15,18 @@ class ScraperProxyTest extends TestCase
 	public function it_should_send_username_password(): void
 	{
         $this->prepareForProxy();
-        $expected_auth_header = base64_encode("laravel-user:some-password");
+        $capturedOptions = null;
 
-        Http::fake(function () {
+        Http::fake(function ($request, $options) use (&$capturedOptions) {
+            $capturedOptions = $options;
             return Http::response('{"body": "html", "initial-status-code": 200}', 200);
         });
 
         Scraper::get('http://httpbin.org/ip');
 
-        // check if username and password are sent
-        Http::assertSent(function (Request $request) use ($expected_auth_header) {
-            return $request->header('Authorization') == ["Basic " . $expected_auth_header];
-        });
+        $this->assertNotNull($capturedOptions, 'Expected a request to be made');
+        $this->assertArrayHasKey('proxy', $capturedOptions);
+        $this->assertStringContainsString('laravel-user:some-password', $capturedOptions['proxy']);
 	}
 
     /** @test */

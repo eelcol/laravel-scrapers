@@ -8,7 +8,7 @@ interface Scraper
 {
     public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self;
 
-    public function get(string $url): ScrapeResponse;
+    public function get(string $url, array $options = []): ScrapeResponse;
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse;
 

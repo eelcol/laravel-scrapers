@@ -26,9 +26,16 @@ class ScraperApi implements Scraper
         return $this;
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
-        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
+        $options = array_merge([
+            'api_key' => config('scraper.providers.scraperapi.key'),
+            'follow_redirect' => "true",
+            'country_code' => 'eu',
+            'url' => $url,
+        ], $options);
+
+        $url = "http://api.scraperapi.com?" . http_build_query($options);
 
         return ScrapeResponse::fromResponse(
             Http::get($url)

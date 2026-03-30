@@ -43,11 +43,11 @@ class Proxy implements Scraper
         return $string . config('scraper.providers.proxy.host') . ":" . config('scraper.providers.proxy.port');
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
         $response = Http::withHeaders($this->headers)
-            ->when(isset($this->cookieJar), function ($r) {
-                $r->withOptions(['cookies' => $this->cookieJar]);
+            ->when(isset($this->cookieJar), function ($r) use ($options) {
+                $r->withOptions(array_merge($options, ['cookies' => $this->cookieJar]));
             })
             ->withOptions([
                 'proxy' => $this->getProxyOption(),

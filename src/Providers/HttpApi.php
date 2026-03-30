@@ -29,13 +29,13 @@ class HttpApi implements Scraper
         return $this;
     }
 
-    public function get(string $url): ScrapeResponse
+    public function get(string $url, array $options = []): ScrapeResponse
     {
         $response = Http::contentType('application/json')
             ->acceptJson()
             ->withHeaders($this->headers)
             ->when(isset($this->cookieJar), function ($r) {
-                $r->withOptions(['cookies' => $this->cookieJar]);
+                $r->withOptions(array_merge($options, ['cookies' => $this->cookieJar]));
             })
             ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
             ->get($url);

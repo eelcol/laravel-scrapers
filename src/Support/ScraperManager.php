@@ -87,7 +87,6 @@ class ScraperManager
 
         $this->headers = [];
         $this->body = null;
-        $this->options = [];
 
         return $response;
     }
@@ -98,7 +97,6 @@ class ScraperManager
 
         $this->headers = [];
         $this->body = null;
-        $this->options = [];
 
         return $response;
     }
@@ -109,7 +107,6 @@ class ScraperManager
 
         $this->headers = [];
         $this->body = null;
-        $this->options = [];
 
         return $response;
     }

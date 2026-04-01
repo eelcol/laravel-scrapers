@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static ScraperManager premium();
  * @method static ScraperManager rememberCookies(bool $bool = true);
  * @method static ScraperManager withHeaders(array $headers);
+ * @method static ScraperManager withOptions(array $options);
  * @method static \Eelcol\LaravelScrapers\Contracts\Scraper resolve();
  * @method static void test();
  */

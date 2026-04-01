@@ -18,24 +18,39 @@ class HttpApi implements Scraper
 
     protected ?string $body = null;
 
-    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
+    protected array $options = [];
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false, array $options = []): self
     {
         $this->remember_cookies = $rememberCookies;
         $this->headers = $headers;
         $this->body = $body;
-        
+        $this->options = $options;
+
         // Premium is not possible in this provider
 
         return $this;
     }
 
+    protected function mergeClientOptions(array $requestOptions = []): array
+    {
+        $merged = array_merge($this->options, $requestOptions);
+        if (isset($this->cookieJar)) {
+            $merged = array_merge($merged, ['cookies' => $this->cookieJar]);
+        }
+
+        return $merged;
+    }
+
     public function get(string $url, array $options = []): ScrapeResponse
     {
+        $clientOptions = $this->mergeClientOptions($options);
+
         $response = Http::contentType('application/json')
             ->acceptJson()
             ->withHeaders($this->headers)
-            ->when(isset($this->cookieJar), function ($r) {
-                $r->withOptions(array_merge($options, ['cookies' => $this->cookieJar]));
+            ->when($clientOptions !== [], function ($r) use ($clientOptions) {
+                $r->withOptions($clientOptions);
             })
             ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36')
             ->get($url);
@@ -45,12 +60,14 @@ class HttpApi implements Scraper
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
+        $clientOptions = $this->mergeClientOptions();
+
         $response = Http::contentType('application/json')
             ->acceptJson()
             ->bodyFormat($body_format)
             ->withHeaders($this->headers)
-            ->when(isset($this->cookieJar), function ($r) {
-                $r->withOptions(['cookies' => $this->cookieJar]);
+            ->when($clientOptions !== [], function ($r) use ($clientOptions) {
+                $r->withOptions($clientOptions);
             })
             ->when(isset($this->body), function ($r) {
                 $r->withBody($this->body);
@@ -63,9 +80,13 @@ class HttpApi implements Scraper
 
     public function image(string $url): ScrapeResponse
     {
+        $clientOptions = $this->mergeClientOptions();
+
         $response = Http::withUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36'
-        )->get($url);
+        )->when($clientOptions !== [], function ($r) use ($clientOptions) {
+            $r->withOptions($clientOptions);
+        })->get($url);
 
         return ScrapeResponse::fromResponse($response);
     }

@@ -15,13 +15,17 @@ class ScraperApi implements Scraper
 
     protected bool $remember_cookies = false;
 
-    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
+    protected array $options = [];
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false, array $options = []): self
     {
         $this->premium = $premium;
 
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
+
+        $this->options = $options;
 
         return $this;
     }
@@ -33,7 +37,7 @@ class ScraperApi implements Scraper
             'follow_redirect' => "true",
             'country_code' => 'eu',
             'url' => $url,
-        ], $options);
+        ], $this->options, $options);
 
         $url = "http://api.scraperapi.com?" . http_build_query($options);
 
@@ -44,19 +48,34 @@ class ScraperApi implements Scraper
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
-        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&country_code=eu&url=" . urlencode($url);
+        $query = array_merge([
+            'api_key' => config('scraper.providers.scraperapi.key'),
+            'follow_redirect' => 'true',
+            'country_code' => 'eu',
+            'url' => $url,
+        ], $this->options);
+
+        $fullUrl = 'http://api.scraperapi.com?' . http_build_query($query);
 
         return ScrapeResponse::fromResponse(
-            Http::bodyFormat($body_format)->post($url, $data)
+            Http::bodyFormat($body_format)->post($fullUrl, $data)
         );
     }
 
     public function image(string $url): ScrapeResponse
     {
-        $url = "http://api.scraperapi.com?api_key=".config('scraper.providers.scraperapi.key') . "&follow_redirect=true&binary_target=true&country_code=eu&url=" . urlencode($url);
+        $query = array_merge([
+            'api_key' => config('scraper.providers.scraperapi.key'),
+            'follow_redirect' => 'true',
+            'binary_target' => 'true',
+            'country_code' => 'eu',
+            'url' => $url,
+        ], $this->options);
+
+        $fullUrl = 'http://api.scraperapi.com?' . http_build_query($query);
 
         return ScrapeResponse::fromResponse(
-            Http::get($url)
+            Http::get($fullUrl)
         );
     }
 }

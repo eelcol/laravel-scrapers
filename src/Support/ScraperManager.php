@@ -26,6 +26,8 @@ class ScraperManager
 
     protected ?string $body = null;
 
+    protected array $options = [];
+
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -72,12 +74,20 @@ class ScraperManager
         return $this;
     }
 
+    public function withOptions(array $options): self
+    {
+        $this->options = $options;
+
+        return $this;
+    }
+
     public function get(string $url, array $options = []): ScrapeResponse
     {
         $response = $this->resolve()->get($url, $options);
 
         $this->headers = [];
         $this->body = null;
+        $this->options = [];
 
         return $response;
     }
@@ -88,7 +98,8 @@ class ScraperManager
 
         $this->headers = [];
         $this->body = null;
-        
+        $this->options = [];
+
         return $response;
     }
 
@@ -98,6 +109,7 @@ class ScraperManager
 
         $this->headers = [];
         $this->body = null;
+        $this->options = [];
 
         return $response;
     }
@@ -121,7 +133,8 @@ class ScraperManager
                 headers: $this->headers,
                 rememberCookies: $this->remember_cookies,
                 body: $this->body,
-                premium: $this->premium
+                premium: $this->premium,
+                options: $this->options
             );
         }
 
@@ -138,7 +151,8 @@ class ScraperManager
                 headers: $this->headers,
                 rememberCookies: $this->remember_cookies,
                 body: $this->body,
-                premium: $this->premium
+                premium: $this->premium,
+                options: $this->options
             );
     }
 }

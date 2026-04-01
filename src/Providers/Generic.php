@@ -17,13 +17,17 @@ class Generic implements Scraper
 
     protected ?string $body = null;
 
-    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
+    protected array $options = [];
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false, array $options = []): self
     {
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
 
         $this->body = $body;
+
+        $this->options = $options;
 
         return $this;
     }
@@ -43,7 +47,7 @@ class Generic implements Scraper
                 'url' => $url,
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies()
-            ], $options));
+            ], $this->options, $options));
 
         return $this->processResponse($response);
     }
@@ -53,7 +57,7 @@ class Generic implements Scraper
         $response = Http::withToken(config('scraper.providers.generic.token'))
             ->asForm()
             ->timeout(60)
-            ->post(config('scraper.providers.generic.url'), [
+            ->post(config('scraper.providers.generic.url'), array_merge($this->options, [
                 'method' => 'post',
                 'url' => $url,
                 'headers' => $this->headers,
@@ -61,7 +65,7 @@ class Generic implements Scraper
                 'body_format' => $body_format,
                 'data' => $data,
                 'body' => $this->body
-            ]);
+            ]));
 
         return $this->processResponse($response);
     }
@@ -70,12 +74,12 @@ class Generic implements Scraper
     {
         $response = Http::withToken(config('scraper.providers.generic.token'))->asForm()
             ->timeout(60)
-            ->post(config('scraper.providers.generic.url'), [
+            ->post(config('scraper.providers.generic.url'), array_merge($this->options, [
                 'method' => 'image',
                 'url' => $url,
                 'headers' => $this->headers,
                 'cookies' => $this->buildCookies(),
-            ]);
+            ]));
 
         return ScrapeResponse::fromResponse($response, true);
     }

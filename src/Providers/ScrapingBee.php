@@ -20,13 +20,17 @@ class ScrapingBee implements Scraper
 
     protected array $cookies = [];
 
-    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
+    protected array $options = [];
+
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false, array $options = []): self
     {
         $this->premium = $premium;
 
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
+
+        $this->options = $options;
 
         return $this;
     }
@@ -41,7 +45,7 @@ class ScrapingBee implements Scraper
                 'forward_headers' => "true",
                 'json_response' => "true",
                 'url' => $url,
-            ], $options);
+            ], $this->options, $options);
 
             if ($this->premium) {
                 $options['premium_proxy'] = "true";
@@ -67,23 +71,32 @@ class ScrapingBee implements Scraper
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
         $response = Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url, $data, $body_format) {
-            $url = "https://app.scrapingbee.com/api/v1/?api_key=" . config('scraper.providers.scrapingbee.key') . "&render_js=false&country_code=nl&forward_headers=true&json_response=true&url=" . urlencode($url);
+            $query = array_merge([
+                'api_key' => config('scraper.providers.scrapingbee.key'),
+                'render_js' => 'false',
+                'country_code' => 'nl',
+                'forward_headers' => 'true',
+                'json_response' => 'true',
+                'url' => $url,
+            ], $this->options);
 
             if ($this->premium) {
-                $url .= "&premium_proxy=true";
+                $query['premium_proxy'] = 'true';
             }
 
             if ($this->remember_cookies) {
                 $cookies = $this->buildCookiesString();
                 if ($cookies) {
-                    $url .= "&cookies=" . urlencode($cookies);
+                    $query['cookies'] = $cookies;
                 }
             }
+
+            $requestUrl = 'https://app.scrapingbee.com/api/v1/?' . http_build_query($query);
 
             return Http::timeout(60)
                 ->withHeaders($this->buildHeaders())
                 ->bodyFormat($body_format)
-                ->post($url, $data);
+                ->post($requestUrl, $data);
         });
 
         return $this->processResponse($response);
@@ -92,21 +105,30 @@ class ScrapingBee implements Scraper
     #[NoReturn]
     public function debug(string $url, array $data = []): void
     {
-        $url = "https://app.scrapingbee.com/api/v1/?api_key=" . config('scraper.providers.scrapingbee.key') . "&render_js=false&country_code=nl&forward_headers=true&json_response=true&url=" . urlencode($url);
+        $query = array_merge([
+            'api_key' => config('scraper.providers.scrapingbee.key'),
+            'render_js' => 'false',
+            'country_code' => 'nl',
+            'forward_headers' => 'true',
+            'json_response' => 'true',
+            'url' => $url,
+        ], $this->options);
 
         if ($this->premium) {
-            $url .= "&premium_proxy=true";
+            $query['premium_proxy'] = 'true';
         }
 
         if ($this->remember_cookies) {
             $cookies = $this->buildCookiesString();
             if ($cookies) {
-                $url .= "&cookies=" . urlencode($cookies);
+                $query['cookies'] = $cookies;
             }
         }
 
+        $requestUrl = 'https://app.scrapingbee.com/api/v1/?' . http_build_query($query);
+
         dd([
-            'url' => $url,
+            'url' => $requestUrl,
             'headers' => $this->buildHeaders(),
             'cookies' => $this->cookies,
         ]);
@@ -115,20 +137,28 @@ class ScrapingBee implements Scraper
     public function image(string $url): ScrapeResponse
     {
         return Lock::create('scrapingbee', config('scraper.concurrency'), 40, function () use ($url) {
-            $url = "https://app.scrapingbee.com/api/v1/?api_key=" . config('scraper.providers.scrapingbee.key') . "&render_js=false&country_code=nl&forward_headers=true&url=" . urlencode($url);
+            $query = array_merge([
+                'api_key' => config('scraper.providers.scrapingbee.key'),
+                'render_js' => 'false',
+                'country_code' => 'nl',
+                'forward_headers' => 'true',
+                'url' => $url,
+            ], $this->options);
 
             if ($this->premium) {
-                $url .= "&premium_proxy=true";
+                $query['premium_proxy'] = 'true';
             }
 
             if ($this->remember_cookies) {
                 $cookies = $this->buildCookiesString();
                 if ($cookies) {
-                    $url .= "&cookies=" . urlencode($cookies);
+                    $query['cookies'] = $cookies;
                 }
             }
 
-            return Http::timeout(60)->get($url);
+            $requestUrl = 'https://app.scrapingbee.com/api/v1/?' . http_build_query($query);
+
+            return Http::timeout(60)->get($requestUrl);
         });
     }
 

@@ -36,4 +36,21 @@ class ScraperRequestTest extends TestCase
             return $request->url() == "https://app.scrapingbee.com/api/v1/?api_key=123&render_js=false&country_code=nl&forward_headers=true&json_response=true&url=https%3A%2F%2Fwww.nu.nl&premium_proxy=true";
         });
 	}
+
+    /** @test */
+    public function it_should_merge_with_options_into_scrapingbee_request(): void
+    {
+        Config::set('scraper.providers.scrapingbee.key', '123');
+
+        Http::fake(function () {
+            return Http::response('{"body": "html", "initial-status-code": 200}', 200);
+        });
+
+        Scraper::withOptions(['stealth_proxy' => 'true'])->get('https://www.nu.nl');
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), 'stealth_proxy=true')
+                && str_contains($request->url(), 'url=https%3A%2F%2Fwww.nu.nl');
+        });
+    }
 }

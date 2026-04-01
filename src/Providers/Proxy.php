@@ -17,14 +17,18 @@ class Proxy implements Scraper
 
     protected CookieJar $cookieJar;
 
+    protected array $options = [];
+
     /**
      * @throws ProxyInformationMissing
      */
-    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false): self
+    public function instantiate(array $headers, bool $rememberCookies, ?string $body = null, ?bool $premium = false, array $options = []): self
     {
         $this->remember_cookies = $rememberCookies;
 
         $this->headers = $headers;
+
+        $this->options = $options;
 
         if (!config('scraper.providers.proxy.host') || !config('scraper.providers.proxy.port')) {
             throw new ProxyInformationMissing("Host or port are missing.");
@@ -45,13 +49,17 @@ class Proxy implements Scraper
 
     public function get(string $url, array $options = []): ScrapeResponse
     {
+        $clientOptions = array_merge(
+            ['proxy' => $this->getProxyOption()],
+            $this->options,
+            $options
+        );
+        if (isset($this->cookieJar)) {
+            $clientOptions = array_merge($clientOptions, ['cookies' => $this->cookieJar]);
+        }
+
         $response = Http::withHeaders($this->headers)
-            ->when(isset($this->cookieJar), function ($r) use ($options) {
-                $r->withOptions(array_merge($options, ['cookies' => $this->cookieJar]));
-            })
-            ->withOptions([
-                'proxy' => $this->getProxyOption(),
-            ])
+            ->withOptions($clientOptions)
             ->timeout(15)
             ->get($url);
 
@@ -60,14 +68,17 @@ class Proxy implements Scraper
 
     public function post(string $url, array $data = [], string $body_format = 'form_params'): ScrapeResponse
     {
+        $clientOptions = array_merge(
+            ['proxy' => $this->getProxyOption()],
+            $this->options
+        );
+        if (isset($this->cookieJar)) {
+            $clientOptions = array_merge($clientOptions, ['cookies' => $this->cookieJar]);
+        }
+
         $response = Http::bodyFormat($body_format)
             ->withHeaders($this->headers)
-            ->when(isset($this->cookieJar), function ($r) {
-                $r->withOptions(['cookies' => $this->cookieJar]);
-            })
-            ->withOptions([
-                'proxy' => $this->getProxyOption(),
-            ])
+            ->withOptions($clientOptions)
             ->timeout(15)
             ->post($url, $data);
 
